@@ -25,11 +25,14 @@ import {
   TableRow,
   Textarea,
 } from "../shared/ui"
+import useTags from "../features/post/model/useTags"
 
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
+
+  const { tags, selectedTag, fetchTags, selectTag } = useTags()
 
   // 상태 관리
   const [posts, setPosts] = useState([])
@@ -44,8 +47,7 @@ const PostsManager = () => {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 })
   const [loading, setLoading] = useState(false)
-  const [tags, setTags] = useState([])
-  const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
+
   const [comments, setComments] = useState({})
   const [selectedComment, setSelectedComment] = useState(null)
   const [newComment, setNewComment] = useState({ body: "", postId: null, userId: 1 })
@@ -98,15 +100,15 @@ const PostsManager = () => {
   }
 
   // 태그 가져오기
-  const fetchTags = async () => {
-    try {
-      const response = await fetch("/api/posts/tags")
-      const data = await response.json()
-      setTags(data)
-    } catch (error) {
-      console.error("태그 가져오기 오류:", error)
-    }
-  }
+  // const fetchTags = async () => {
+  //   try {
+  //     const response = await fetch("/api/posts/tags")
+  //     const data = await response.json()
+  //     setTags(data)
+  //   } catch (error) {
+  //     console.error("태그 가져오기 오류:", error)
+  //   }
+  // }
 
   // 게시물 검색
   const searchPosts = async () => {
@@ -268,7 +270,6 @@ const PostsManager = () => {
   // 댓글 좋아요
   const likeComment = async (id, postId) => {
     try {
-
       const response = await fetch(`/api/comments/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -277,7 +278,9 @@ const PostsManager = () => {
       const data = await response.json()
       setComments((prev) => ({
         ...prev,
-        [postId]: prev[postId].map((comment) => (comment.id === data.id ? {...data, likes: comment.likes + 1} : comment)),
+        [postId]: prev[postId].map((comment) =>
+          comment.id === data.id ? { ...data, likes: comment.likes + 1 } : comment,
+        ),
       }))
     } catch (error) {
       console.error("댓글 좋아요 오류:", error)
@@ -323,7 +326,8 @@ const PostsManager = () => {
     setSearchQuery(params.get("search") || "")
     setSortBy(params.get("sortBy") || "")
     setSortOrder(params.get("sortOrder") || "asc")
-    setSelectedTag(params.get("tag") || "")
+
+    selectTag(params.get("tag") || "")
   }, [location.search])
 
   // 하이라이트 함수 추가
@@ -371,7 +375,7 @@ const PostsManager = () => {
                           : "text-blue-800 bg-blue-100 hover:bg-blue-200"
                       }`}
                       onClick={() => {
-                        setSelectedTag(tag)
+                        selectTag(tag)
                         updateURL()
                       }}
                     >
@@ -499,7 +503,8 @@ const PostsManager = () => {
             <Select
               value={selectedTag}
               onValueChange={(value) => {
-                setSelectedTag(value)
+                selectTag(value)
+
                 fetchPostsByTag(value)
                 updateURL()
               }}
