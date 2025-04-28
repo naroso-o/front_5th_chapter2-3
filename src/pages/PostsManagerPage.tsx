@@ -26,8 +26,12 @@ import {
   Textarea,
 } from "../shared/ui"
 import useTags from "../features/post/model/useTags"
+import useParam from "../shared/model/useParam"
+import useCommentStore from "../shared/model/useCommentStore"
+import usePostStore from "../shared/model/usePostStore"
+import useUserStore from "../shared/model/useUserStore"
 
-type Post = {
+export type Post = {
   id: number
   userId: number
   title: string
@@ -37,12 +41,12 @@ type Post = {
   reactions: Reaction
 }
 
-type Posts = {
+export type Posts = {
   total: number
   posts: Post[]
 }
 
-type User = {
+export type User = {
   id: number
   username: string
   image: string
@@ -71,7 +75,7 @@ type Company = {
   title: string
 }
 
-type Comment = {
+export type Comment = {
   postId: number
   id: number
   body: string
@@ -82,36 +86,45 @@ type Comment = {
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
 
   const { tags, selectedTag, fetchTags, selectTag } = useTags()
 
-  // 상태 관리
-  const [posts, setPosts] = useState<Post[]>([])
-  const [total, setTotal] = useState(0)
-  const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
-  const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"))
-  const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
-  const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
-  const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc")
-  const [showAddDialog, setShowAddDialog] = useState(false)
-  const [showEditDialog, setShowEditDialog] = useState(false)
-  const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 })
-  const [loading, setLoading] = useState(false)
+  const { skip, limit, searchQuery, sortBy, sortOrder, setSkip, setLimit, setSearchQuery, setSortBy, setSortOrder } =
+    useParam()
 
-  const [comments, setComments] = useState<Record<number, Comment[]>>({})
-  const [selectedComment, setSelectedComment] = useState<Comment | null>(null)
-  const [newComment, setNewComment] = useState<{ body: string; postId: number | null; userId: number }>({
-    body: "",
-    postId: null,
-    userId: 1,
-  })
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
-  const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
-  const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
-  const [showUserModal, setShowUserModal] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const {
+    comments,
+    setComments,
+    selectedComment,
+    setSelectedComment,
+    newComment,
+    setNewComment,
+    showAddCommentDialog,
+    setShowAddCommentDialog,
+    showEditCommentDialog,
+    setShowEditCommentDialog,
+  } = useCommentStore()
+
+  const {
+    posts,
+    setPosts,
+    total,
+    setTotal,
+    selectedPost,
+    setSelectedPost,
+    showAddDialog,
+    setShowAddDialog,
+    showEditDialog,
+    setShowEditDialog,
+    newPost,
+    setNewPost,
+    showPostDetailDialog,
+    setShowPostDetailDialog,
+  } = usePostStore()
+
+  const { showUserModal, setShowUserModal, selectedUser, setSelectedUser } = useUserStore()
+
+  const [loading, setLoading] = useState(false)
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -275,7 +288,7 @@ const PostsManager = () => {
     try {
       const response = await fetch(`/api/comments/post/${postId}`)
       const data = await response.json()
-      setComments((prev) => ({ ...prev, [postId]: data.comments }))
+      setComments({ ...comments, [postId]: data.comments })
     } catch (error) {
       console.error("댓글 가져오기 오류:", error)
     }
@@ -287,13 +300,15 @@ const PostsManager = () => {
       const response = await fetch("/api/comments/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newComment),
+        body: JSON.stringify(useCommentStore.getState().newComment),
       })
       const data = await response.json()
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: [...(prev[data.postId] || []), data],
-      }))
+
+      setComments({
+        ...useCommentStore.getState().comments,
+        [data.postId]: [...(useCommentStore.getState().comments[data.postId] || []), data],
+      })
+
       setShowAddCommentDialog(false)
       setNewComment({ body: "", postId: null, userId: 1 })
     } catch (error) {
@@ -304,19 +319,24 @@ const PostsManager = () => {
   // 댓글 업데이트
   const updateComment = async () => {
     try {
+      const { selectedComment, comments } = useCommentStore.getState()
+
       if (!selectedComment) {
         throw new Error()
       }
+
       const response = await fetch(`/api/comments/${selectedComment.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ body: selectedComment.body }),
       })
       const data = await response.json()
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: prev[data.postId].map((comment) => (comment.id === data.id ? data : comment)),
-      }))
+
+      setComments({
+        ...comments,
+        [data.postId]: comments[data.postId].map((comment) => (comment.id === data.id ? data : comment)),
+      })
+
       setShowEditCommentDialog(false)
     } catch (error) {
       console.error("댓글 업데이트 오류:", error)
@@ -326,13 +346,16 @@ const PostsManager = () => {
   // 댓글 삭제
   const deleteComment = async (id: number, postId: number) => {
     try {
+      const { comments } = useCommentStore.getState()
+
       await fetch(`/api/comments/${id}`, {
         method: "DELETE",
       })
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].filter((comment) => comment.id !== id),
-      }))
+
+      setComments({
+        ...comments,
+        [postId]: comments[postId].filter((comment) => comment.id !== id),
+      })
     } catch (error) {
       console.error("댓글 삭제 오류:", error)
     }
@@ -351,12 +374,12 @@ const PostsManager = () => {
         body: JSON.stringify({ likes: comment.likes + 1 }),
       })
       const data = await response.json()
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].map((comment) =>
+      setComments({
+        ...comments,
+        [postId]: comments[postId].map((comment) =>
           comment.id === data.id ? { ...data, likes: comment.likes + 1 } : comment,
         ),
-      }))
+      })
     } catch (error) {
       console.error("댓글 좋아요 오류:", error)
     }
