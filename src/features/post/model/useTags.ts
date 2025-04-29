@@ -1,12 +1,9 @@
-import { useState } from "react"
-
-type Tag = { url: string; slug: string }
+import useParam from "../../../shared/model/useParam"
+import useTagStore from "../../../shared/model/useTagStore"
 
 const useTags = () => {
-  const queryParams = new URLSearchParams(location.search)
-
-  const [tags, setTags] = useState<Tag[]>([])
-  const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
+  const { setTags } = useTagStore()
+  const { updateParam } = useParam()
 
   /** 태그 가져오기 */
   const fetchTags = async () => {
@@ -21,10 +18,10 @@ const useTags = () => {
 
   /** 태그 선택하기 */
   const selectTag = (tag: string) => {
-    setSelectedTag(tag)
+    updateParam("tag", tag)
   }
 
-  return { tags, selectedTag, fetchTags, selectTag }
+  return { fetchTags, selectTag }
 }
 
 export default useTags

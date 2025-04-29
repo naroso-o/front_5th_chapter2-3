@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
-import { useLocation, useNavigate } from "react-router-dom"
 import {
   Button,
   Card,
@@ -30,6 +29,13 @@ import useParam from "../shared/model/useParam"
 import useCommentStore from "../shared/model/useCommentStore"
 import usePostStore from "../shared/model/usePostStore"
 import useUserStore from "../shared/model/useUserStore"
+import useTagStore from "../shared/model/useTagStore"
+import { useLocation } from "react-router-dom"
+
+export type Tag = {
+  url: string
+  slug: string
+}
 
 export type Post = {
   id: number
@@ -84,13 +90,13 @@ export type Comment = {
 }
 
 const PostsManager = () => {
-  const navigate = useNavigate()
   const location = useLocation()
 
-  const { tags, selectedTag, fetchTags, selectTag } = useTags()
+  const { selectTag, fetchTags } = useTags()
 
-  const { skip, limit, searchQuery, sortBy, sortOrder, setSkip, setLimit, setSearchQuery, setSortBy, setSortOrder } =
-    useParam()
+  const { skip, limit, searchQuery, sortBy, sortOrder, selectedTag, updateParam } = useParam()
+
+  const { tags } = useTagStore()
 
   const {
     comments,
@@ -125,18 +131,6 @@ const PostsManager = () => {
   const { showUserModal, setShowUserModal, selectedUser, setSelectedUser } = useUserStore()
 
   const [loading, setLoading] = useState(false)
-
-  // URL 업데이트 함수
-  const updateURL = () => {
-    const params = new URLSearchParams()
-    if (skip) params.set("skip", skip.toString())
-    if (limit) params.set("limit", limit.toString())
-    if (searchQuery) params.set("search", searchQuery)
-    if (sortBy) params.set("sortBy", sortBy)
-    if (sortOrder) params.set("sortOrder", sortOrder)
-    if (selectedTag) params.set("tag", selectedTag)
-    navigate(`?${params.toString()}`)
-  }
 
   // 게시물 가져오기
   const fetchPosts = () => {
@@ -176,17 +170,6 @@ const PostsManager = () => {
         setLoading(false)
       })
   }
-
-  // 태그 가져오기
-  // const fetchTags = async () => {
-  //   try {
-  //     const response = await fetch("/api/posts/tags")
-  //     const data = await response.json()
-  //     setTags(data)
-  //   } catch (error) {
-  //     console.error("태그 가져오기 오류:", error)
-  //   }
-  // }
 
   // 게시물 검색
   const searchPosts = async () => {
@@ -414,18 +397,6 @@ const PostsManager = () => {
     } else {
       fetchPosts()
     }
-    updateURL()
-  }, [skip, limit, sortBy, sortOrder, selectedTag])
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    setSkip(parseInt(params.get("skip") || "0"))
-    setLimit(parseInt(params.get("limit") || "10"))
-    setSearchQuery(params.get("search") || "")
-    setSortBy(params.get("sortBy") || "")
-    setSortOrder(params.get("sortOrder") || "asc")
-
-    selectTag(params.get("tag") || "")
   }, [location.search])
 
   // 하이라이트 함수 추가
@@ -473,8 +444,9 @@ const PostsManager = () => {
                           : "text-blue-800 bg-blue-100 hover:bg-blue-200"
                       }`}
                       onClick={() => {
+                        console.log("tag clicked", tag)
                         selectTag(tag)
-                        updateURL()
+                        // updateURL()
                       }}
                     >
                       {tag}
@@ -593,7 +565,7 @@ const PostsManager = () => {
                   placeholder="게시물 검색..."
                   className="pl-8"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => updateParam("search", e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && searchPosts()}
                 />
               </div>
@@ -602,9 +574,8 @@ const PostsManager = () => {
               value={selectedTag}
               onValueChange={(value) => {
                 selectTag(value)
-
                 fetchPostsByTag(value)
-                updateURL()
+                // updateURL()
               }}
             >
               <SelectTrigger className="w-[180px]">
@@ -619,7 +590,7 @@ const PostsManager = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={sortBy} onValueChange={setSortBy}>
+            <Select value={sortBy} onValueChange={(value) => updateParam("sortBy", value)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="정렬 기준" />
               </SelectTrigger>
@@ -630,7 +601,7 @@ const PostsManager = () => {
                 <SelectItem value="reactions">반응</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={sortOrder} onValueChange={setSortOrder}>
+            <Select value={sortOrder} onValueChange={(value) => updateParam("sortOrder", value)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="정렬 순서" />
               </SelectTrigger>
@@ -648,7 +619,7 @@ const PostsManager = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <span>표시</span>
-              <Select value={limit.toString()} onValueChange={(value) => setLimit(Number(value))}>
+              <Select value={limit.toString()} onValueChange={(value) => updateParam("limit", value)}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="10" />
                 </SelectTrigger>
@@ -661,10 +632,10 @@ const PostsManager = () => {
               <span>항목</span>
             </div>
             <div className="flex gap-2">
-              <Button disabled={skip === 0} onClick={() => setSkip(Math.max(0, skip - limit))}>
+              <Button disabled={skip === 0} onClick={() => updateParam("skip", String(Math.max(0, skip - limit)))}>
                 이전
               </Button>
-              <Button disabled={skip + limit >= total} onClick={() => setSkip(skip + limit)}>
+              <Button disabled={skip + limit >= total} onClick={() => updateParam("skip", String(skip + limit))}>
                 다음
               </Button>
             </div>
