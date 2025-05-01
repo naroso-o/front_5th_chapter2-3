@@ -1,6 +1,6 @@
 import { ThumbsUp } from "lucide-react"
 import { Button } from "../../../shared/ui"
-import useComments from "../model/useComments"
+import useCommentButton from "../model/useCommentButton"
 
 interface CommentLikeButtonProps {
   commentId: number
@@ -8,7 +8,7 @@ interface CommentLikeButtonProps {
   likes: number
 }
 export const CommentLikeButton = ({ commentId, postId, likes }: CommentLikeButtonProps) => {
-  const { likeCommentFetch } = useComments()
+  const { likeCommentFetch } = useCommentButton()
 
   return (
     <Button variant="ghost" size="sm" onClick={() => likeCommentFetch(commentId, postId)}>

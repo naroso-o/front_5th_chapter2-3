@@ -32,14 +32,6 @@ const usePosts = () => {
   const { setTags } = useTagStore()
   const { setSelectedUser, setShowUserModal } = useUserStore()
 
-  //   useEffect(() => {
-  //     if (selectedTag) {
-  //       fetchPostsByTag(selectedTag)
-  //     } else {
-  //       fetchPosts()
-  //     }
-  //   }, [location.search])
-
   const selectedPostTitle = selectedPost?.title || ""
   const selectedPostBody = selectedPost?.body || ""
   const selectedPostId = selectedPost?.id || 0 // TODO: null일 때 0?

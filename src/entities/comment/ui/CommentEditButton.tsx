@@ -1,13 +1,15 @@
 import { Edit2 } from "lucide-react"
 import { Button } from "../../../shared/ui"
-import useComments from "../model/useComments"
 import { Comment } from "../../../pages/PostsManagerPage"
+import useCommentButton from "../model/useCommentButton"
 
 interface CommentEditButtonProps {
   comment: Comment
 }
+
 export const CommentEditButton = ({ comment }: CommentEditButtonProps) => {
-  const { editComment } = useComments()
+  const { editComment } = useCommentButton()
+
   return (
     <Button
       variant="ghost"

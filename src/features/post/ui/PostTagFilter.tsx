@@ -16,7 +16,6 @@ export const PostTagFilter = () => {
       onValueChange={(value) => {
         selectTag(value)
         fetchPostsByTag(value)
-        // updateURL()
       }}
     >
       <SelectTrigger className="w-[180px]">

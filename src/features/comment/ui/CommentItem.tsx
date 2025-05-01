@@ -1,9 +1,9 @@
 import { Comment } from "../../../pages/PostsManagerPage"
 import useParam from "../../../shared/model/useParam"
 import { HightLightText } from "../../../shared/ui/HighLightText"
-import { CommentDeleteButton } from "./CommentDeleteButton"
-import { CommentEditButton } from "./CommentEditButton"
-import { CommentLikeButton } from "./CommentLikeButton"
+import { CommentDeleteButton } from "../../../entities/comment/ui/CommentDeleteButton"
+import { CommentEditButton } from "../../../entities/comment/ui/CommentEditButton"
+import { CommentLikeButton } from "../../../entities/comment/ui/CommentLikeButton"
 
 interface CommentItemProps {
   postId: number
@@ -23,7 +23,7 @@ export const CommentItem = ({ postId, comment }: CommentItemProps) => {
       </div>
       <div className="flex items-center space-x-1">
         <CommentLikeButton commentId={comment.id} postId={postId} likes={comment.likes} />
-        <CommentEditButton />
+        <CommentEditButton comment={comment} />
         <CommentDeleteButton commentId={comment.id} postId={postId} />
       </div>
     </div>

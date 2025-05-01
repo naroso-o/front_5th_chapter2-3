@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../shared/ui"
 import { HightLightText } from "../../../shared/ui/HighLightText"
 import usePosts from "../model/usePosts"
-import { CommentSection } from "./CommentSection"
+import { CommentSection } from "../../../widgets/ui/CommentSection"
 
 /* 게시물 상세 보기 대화상자 */
 export const PostDetailDialog = () => {
