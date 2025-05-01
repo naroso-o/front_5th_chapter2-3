@@ -10,6 +10,8 @@ type PostStates = {
   showAddDialog: boolean
   showEditDialog: boolean
   showPostDetailDialog: boolean
+
+  loading: boolean
 }
 
 type PostActions = {
@@ -20,6 +22,7 @@ type PostActions = {
   setShowAddDialog: (show: boolean) => void
   setShowEditDialog: (show: boolean) => void
   setShowPostDetailDialog: (show: boolean) => void
+  setLoading: (loading: boolean) => void
   reset: () => void
 }
 
@@ -33,6 +36,8 @@ const usePostStore = create<PostStates & PostActions>((set) => ({
   showEditDialog: false,
   showPostDetailDialog: false,
 
+  loading: false,
+
   setPosts: (posts) => set({ posts }),
   setTotal: (total) => set({ total }),
   setSelectedPost: (post) => set({ selectedPost: post }),
@@ -40,6 +45,7 @@ const usePostStore = create<PostStates & PostActions>((set) => ({
   setShowAddDialog: (show) => set({ showAddDialog: show }),
   setShowEditDialog: (show) => set({ showEditDialog: show }),
   setShowPostDetailDialog: (show) => set({ showPostDetailDialog: show }),
+  setLoading: (loading) => set({ loading }),
 
   reset: () =>
     set({

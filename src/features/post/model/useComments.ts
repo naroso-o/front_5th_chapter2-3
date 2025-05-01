@@ -124,6 +124,7 @@ const useComments = () => {
     setNewComment({ ...newComment, body: e.target.value })
   }
 
+    /** 선택된 댓글 업데이트 */
   const updateSelectedComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newSelectedComment = selectedComment as Comment // TODO: 이렇게 해도 괜찮나?
     setSelectedComment({ ...newSelectedComment, body: e.target.value })
