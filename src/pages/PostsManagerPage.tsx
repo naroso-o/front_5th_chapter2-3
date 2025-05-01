@@ -1,7 +1,8 @@
 import { useEffect } from "react"
-import { PostSection } from "../features/post/ui/PostSection"
-import usePosts from "../features/post/model/usePosts"
 import { useLocation } from "react-router-dom"
+import { PostAddDialog, PostDetailDialog, PostEditDialog, PostSection } from "@/widgets/post"
+import usePosts from "../features/post/model/usePosts"
+import { CommentAddDialog, CommentEditDialog } from "@/widgets/comment/ui"
 
 const PostsManager = () => {
   const location = useLocation()
@@ -15,7 +16,16 @@ const PostsManager = () => {
     updatedURLFetch()
   }, [location.search])
 
-  return <PostSection />
+  return (
+    <>
+      <PostSection />
+      <PostDetailDialog />
+      <PostAddDialog />
+      <PostEditDialog />
+      <CommentAddDialog />
+      <CommentEditDialog />
+    </>
+  )
 }
 
 export default PostsManager

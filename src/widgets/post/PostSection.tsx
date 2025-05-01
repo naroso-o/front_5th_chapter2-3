@@ -1,14 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui"
-import { PostDetailDialog } from "./PostDetailDialog"
-import { PostAddDialog } from "./PostAddDialog"
-import { PostEditDialog } from "./PostEditDialog"
-import { PostPagination } from "./PostPagination"
-import { PostTable } from "./PostTable"
-import { PostAddButton } from "./PostAddButton"
-import { PostSearchInput } from "./PostSearchInput"
-import { PostSortFilter } from "./PostSortFilter"
-import { PostTagFilter } from "./PostTagFilter"
-import { UserDialog } from "./UserDialog"
+import { PostPagination } from "../../features/post/ui/PostPagination"
+import { PostTable } from "../../features/post/ui/PostTable"
+import { PostAddButton } from "../../features/post/ui/PostAddButton"
+import { PostSearchInput } from "../../features/post/ui/PostSearchInput"
+import { PostSortFilter } from "../../features/post/ui/PostSortFilter"
+import { PostTagFilter } from "../../features/post/ui/PostTagFilter"
+import { UserDialog } from "../../features/post/ui/UserDialog"
 
 export const PostSection = () => {
   return (
@@ -32,9 +29,6 @@ export const PostSection = () => {
           <PostPagination />
         </div>
       </CardContent>
-      <PostDetailDialog />
-      <PostAddDialog />
-      <PostEditDialog />
       <UserDialog />
     </Card>
   )

@@ -1,5 +1,5 @@
+import usePosts from "@/features/post/model/usePosts"
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "@/shared/ui"
-import usePosts from "../model/usePosts"
 
 /* 게시물 수정 대화상자 */
 export const PostEditDialog = () => {
@@ -11,6 +11,7 @@ export const PostEditDialog = () => {
     updateSelectedPost,
     updatePostFetch,
   } = usePosts()
+  
   return (
     <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
       <DialogContent>

@@ -1,10 +1,8 @@
 import { Plus } from "lucide-react"
 import { Button } from "@/shared/ui"
 import { Comment } from "@/shared/types"
-import useComments from "@/features/comment/model/useComments"
-import { CommentAddDialog } from "@/features/comment/ui/CommentAddDialog"
-import { CommentEditDialog } from "@/features/comment/ui/CommentEditDialog"
-import { CommentItem } from "@/features/comment/ui/CommentItem"
+import useComments from "@/widgets/comment/model/useComments"
+import { CommentItem } from "@/entities/comment/ui"
 
 interface CommentSectionProps {
   postId: number
@@ -14,9 +12,6 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
   const { getComments, addComment } = useComments()
 
   return (
-    <>
-      <CommentAddDialog />
-      <CommentEditDialog />
       <div className="mt-2">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-sm font-semibold">댓글</h3>
@@ -34,6 +29,5 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
           {getComments(postId)?.map((comment: Comment) => <CommentItem key={comment.id} postId={postId} comment={comment} />)}
         </div>
       </div>
-    </>
   )
 }

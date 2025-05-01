@@ -1,4 +1,5 @@
 import useCommentStore from "@/shared/model/useCommentStore"
+import { Comment } from "@/shared/types"
 
 const useComments = () => {
   const {

@@ -1,7 +1,7 @@
-import { CommentSection } from "@/widgets/ui/CommentSection"
+import { CommentSection } from "@/features/post/ui/CommentSection"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui"
 import { HightLightText } from "@/shared/ui/HighLightText"
-import usePosts from "../model/usePosts"
+import usePosts from "@/features/post/model/usePosts"
 
 
 /* 게시물 상세 보기 대화상자 */
