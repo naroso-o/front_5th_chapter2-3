@@ -1,5 +1,5 @@
-import useParam from "../../../shared/model/useParam"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../shared/ui"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui"
+import useParam from "@/shared/model/useParam"
 
 export const PostSortFilter = () => {
   const {sortBy, sortOrder, updateParam} = useParam()

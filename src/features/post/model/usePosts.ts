@@ -1,9 +1,9 @@
-import useParam from "../../../shared/model/useParam"
-import usePostStore from "../../../shared/model/usePostStore"
-import { Post, Posts, User } from "../../../pages/PostsManagerPage"
-import useUserStore from "../../../shared/model/useUserStore"
-import useCommentStore from "../../../shared/model/useCommentStore"
-import useTagStore from "../../../shared/model/useTagStore"
+import useCommentStore from "@/shared/model/useCommentStore"
+import useParam from "@/shared/model/useParam"
+import usePostStore from "@/shared/model/usePostStore"
+import useTagStore from "@/shared/model/useTagStore"
+import useUserStore from "@/shared/model/useUserStore"
+import { Post, Posts, User } from "@/shared/types"
 
 export type EditType = "title" | "body"
 export type AddType = "title" | "body" | "userId"
@@ -279,7 +279,7 @@ const usePosts = () => {
     setShowPostDetailDialog,
     fetchPostsByTag,
     executeInitialFetch,
-    updatedURLFetch
+    updatedURLFetch,
   }
 }
 

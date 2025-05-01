@@ -1,5 +1,4 @@
-import { Comment } from "../../../pages/PostsManagerPage"
-import useCommentStore from "../../../shared/model/useCommentStore"
+import useCommentStore from "@/shared/model/useCommentStore"
 
 const useComments = () => {
   const {

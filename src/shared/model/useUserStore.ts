@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { User } from "../../pages/PostsManagerPage"
+import { User } from "../types"
 
 type UserStates = {
   showUserModal: boolean

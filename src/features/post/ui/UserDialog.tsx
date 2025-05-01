@@ -1,5 +1,5 @@
-import useUserStore from "../../../shared/model/useUserStore"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../shared/ui"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui"
+import useUserStore from "@/shared/model/useUserStore"
 
 /* 사용자 모달 */
 export const UserDialog = () => {

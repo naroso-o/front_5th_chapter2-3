@@ -1,6 +1,6 @@
-import useParam from "../../../shared/model/useParam"
-import usePostStore from "../../../shared/model/usePostStore"
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../shared/ui"
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui"
+import useParam from "@/shared/model/useParam"
+import usePostStore from "@/shared/model/usePostStore"
 
 /* 페이지네이션 */
 export const PostPagination = () => {

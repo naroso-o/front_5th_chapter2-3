@@ -1,6 +1,6 @@
-import { Post } from "../../../pages/PostsManagerPage"
 import { Edit2 } from "lucide-react"
-import { Button } from "../../../shared/ui"
+import { Button } from "@/shared/ui"
+import { Post } from "@/shared/types"
 import usePosts from "../model/usePosts"
 
 interface PostEditButtonProps {

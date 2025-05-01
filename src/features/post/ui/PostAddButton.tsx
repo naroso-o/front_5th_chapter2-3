@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react"
-import { Button } from "../../../shared/ui"
+import { Button } from "@/shared/ui"
 import usePosts from "../model/usePosts"
 
 export const PostAddButton = () => {

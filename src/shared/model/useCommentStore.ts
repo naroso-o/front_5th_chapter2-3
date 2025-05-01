@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { Comment } from "../../pages/PostsManagerPage"
+import { Comment } from "../types"
 
 type CommentStates = {
   comments: Record<number, Comment[]>

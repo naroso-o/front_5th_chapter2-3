@@ -1,7 +1,7 @@
 import { MessageSquare } from "lucide-react"
-import { Button } from "../../../shared/ui"
+import { Button } from "@/shared/ui"
+import { Post } from "@/shared/types"
 import usePosts from "../model/usePosts"
-import { Post } from "../../../pages/PostsManagerPage"
 
 interface PostDetailButtonProps {
   post: Post

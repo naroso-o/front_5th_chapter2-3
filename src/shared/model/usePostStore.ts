@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { Post } from "../../pages/PostsManagerPage"
+import { Post } from "../types"
 
 type PostStates = {
   posts: Post[]

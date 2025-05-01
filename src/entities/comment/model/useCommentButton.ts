@@ -1,5 +1,5 @@
-import useCommentStore from "../../../shared/model/useCommentStore"
-import { Comment } from "../../../pages/PostsManagerPage"
+import useCommentStore from "@/shared/model/useCommentStore"
+import { Comment } from "@/shared/types"
 
 const useCommentButton = () => {
   const {comments, setComments, setSelectedComment, setShowEditCommentDialog} = useCommentStore()

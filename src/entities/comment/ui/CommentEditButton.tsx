@@ -1,6 +1,6 @@
 import { Edit2 } from "lucide-react"
-import { Button } from "../../../shared/ui"
-import { Comment } from "../../../pages/PostsManagerPage"
+import { Button } from "@/shared/ui"
+import { Comment } from "@/shared/types"
 import useCommentButton from "../model/useCommentButton"
 
 interface CommentEditButtonProps {

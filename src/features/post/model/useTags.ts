@@ -1,8 +1,7 @@
-import useParam from "../../../shared/model/useParam"
+import useParam from "@/shared/model/useParam"
 
 const useTags = () => {
-  const { selectedTag } = useParam()
-  const { updateParam } = useParam()
+  const { selectedTag, updateParam } = useParam()
 
   /** 태그 선택하기 */
   const selectTag = (tag: string) => {

@@ -1,9 +1,7 @@
-import { Comment } from "../../../pages/PostsManagerPage"
-import useParam from "../../../shared/model/useParam"
-import { HightLightText } from "../../../shared/ui/HighLightText"
-import { CommentDeleteButton } from "../../../entities/comment/ui/CommentDeleteButton"
-import { CommentEditButton } from "../../../entities/comment/ui/CommentEditButton"
-import { CommentLikeButton } from "../../../entities/comment/ui/CommentLikeButton"
+import useParam from "@/shared/model/useParam"
+import { HightLightText } from "@/shared/ui/HighLightText"
+import { Comment } from "@/shared/types"
+import { CommentDeleteButton, CommentEditButton, CommentLikeButton } from "@/entities/comment/ui"
 
 interface CommentItemProps {
   postId: number

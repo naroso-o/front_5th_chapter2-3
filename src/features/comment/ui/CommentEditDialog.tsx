@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "../../../shared/ui"
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Textarea } from "@/shared/ui"
 import useComments from "../model/useComments"
 
 /* 댓글 수정 대화상자 */

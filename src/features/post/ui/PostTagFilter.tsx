@@ -1,8 +1,8 @@
-import useParam from "../../../shared/model/useParam"
-import useTagStore from "../../../shared/model/useTagStore"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../shared/ui"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui"
+import useParam from "@/shared/model/useParam"
 import usePosts from "../model/usePosts"
 import useTags from "../model/useTags"
+import useTagStore from "@/shared/model/useTagStore"
 
 export const PostTagFilter = () => {
   const { selectedTag } = useParam()

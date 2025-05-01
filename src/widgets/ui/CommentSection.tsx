@@ -1,9 +1,10 @@
 import { Plus } from "lucide-react"
-import useComments from "../../features/comment/model/useComments"
-import { CommentAddDialog } from "../../features/comment/ui/CommentAddDialog"
-import { CommentEditDialog } from "../../features/comment/ui/CommentEditDialog"
-import { CommentItem } from "../../features/comment/ui/CommentItem"
-import { Button } from "../../shared/ui"
+import { Button } from "@/shared/ui"
+import { Comment } from "@/shared/types"
+import useComments from "@/features/comment/model/useComments"
+import { CommentAddDialog } from "@/features/comment/ui/CommentAddDialog"
+import { CommentEditDialog } from "@/features/comment/ui/CommentEditDialog"
+import { CommentItem } from "@/features/comment/ui/CommentItem"
 
 interface CommentSectionProps {
   postId: number
@@ -30,7 +31,7 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
           </Button>
         </div>
         <div className="space-y-1">
-          {getComments(postId)?.map((comment) => <CommentItem key={comment.id} postId={postId} comment={comment} />)}
+          {getComments(postId)?.map((comment: Comment) => <CommentItem key={comment.id} postId={postId} comment={comment} />)}
         </div>
       </div>
     </>

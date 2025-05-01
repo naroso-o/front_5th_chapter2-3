@@ -1,11 +1,11 @@
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui"
 import { ThumbsDown, ThumbsUp } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../shared/ui"
-import { HightLightText } from "../../../shared/ui/HighLightText"
-import usePosts from "../model/usePosts"
 import { PostDetailButton } from "./PostDetailButton"
 import { PostEditButton } from "./PostEditButton"
 import { PostDeleteButton } from "./PostDeleteButton"
 import { TagItem } from "./TagItem"
+import { HightLightText } from "@/shared/ui/HighLightText"
+import usePosts from "../model/usePosts"
 
 /** 게시물 테이블 */
 export const PostTable = () => {
@@ -33,7 +33,9 @@ export const PostTable = () => {
                 <div>
                   <HightLightText text={post.title} highlight={searchQuery} />
                 </div>
-                <div className="flex flex-wrap gap-1">{post.tags?.map((tag) => <TagItem key={tag} tag={tag} />)}</div>
+                <div className="flex flex-wrap gap-1">
+                  {post.tags?.map((tag: string) => <TagItem key={tag} tag={tag} />)}
+                </div>
               </div>
             </TableCell>
             <TableCell>

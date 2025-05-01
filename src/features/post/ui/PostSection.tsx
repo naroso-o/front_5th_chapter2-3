@@ -1,3 +1,4 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui"
 import { PostDetailDialog } from "./PostDetailDialog"
 import { PostAddDialog } from "./PostAddDialog"
 import { PostEditDialog } from "./PostEditDialog"
@@ -7,7 +8,6 @@ import { PostAddButton } from "./PostAddButton"
 import { PostSearchInput } from "./PostSearchInput"
 import { PostSortFilter } from "./PostSortFilter"
 import { PostTagFilter } from "./PostTagFilter"
-import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/ui"
 import { UserDialog } from "./UserDialog"
 
 export const PostSection = () => {

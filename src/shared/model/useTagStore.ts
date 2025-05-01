@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { Tag } from "../../pages/PostsManagerPage"
+import { Tag } from "../types"
 
 type TagStates = {
   tags: Tag[]

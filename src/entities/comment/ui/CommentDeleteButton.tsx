@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react"
-import { Button } from "../../../shared/ui"
+import { Button } from "@/shared/ui"
 import useCommentButton from "../model/useCommentButton"
 
 interface CommentDeleteButtonProps {

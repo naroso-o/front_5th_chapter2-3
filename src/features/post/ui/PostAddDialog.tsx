@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "../../../shared/ui"
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, Input, Textarea } from "@/shared/ui"
 import usePosts from "../model/usePosts"
 
 /* 게시물 추가 대화상자 */
