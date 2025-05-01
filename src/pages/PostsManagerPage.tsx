@@ -31,6 +31,7 @@ import usePostStore from "../shared/model/usePostStore"
 import useUserStore from "../shared/model/useUserStore"
 import useTagStore from "../shared/model/useTagStore"
 import { useLocation } from "react-router-dom"
+import { HightLightText } from "../shared/ui/HighLightText"
 
 export type Tag = {
   url: string
@@ -399,21 +400,6 @@ const PostsManager = () => {
     }
   }, [location.search])
 
-  // 하이라이트 함수 추가
-  const highlightText = (text: string, highlight: string) => {
-    if (!text) return null
-    if (!highlight.trim()) {
-      return <span>{text}</span>
-    }
-    const regex = new RegExp(`(${highlight})`, "gi")
-    const parts = text.split(regex)
-    return (
-      <span>
-        {parts.map((part, i) => (regex.test(part) ? <mark key={i}>{part}</mark> : <span key={i}>{part}</span>))}
-      </span>
-    )
-  }
-
   // 게시물 테이블 렌더링
   const renderPostTable = () => (
     <Table>
@@ -432,8 +418,9 @@ const PostsManager = () => {
             <TableCell>{post.id}</TableCell>
             <TableCell>
               <div className="space-y-1">
-                <div>{highlightText(post.title, searchQuery)}</div>
-
+                <div>
+                  <HightLightText text={post.title} highlight={searchQuery} />
+                </div>
                 <div className="flex flex-wrap gap-1">
                   {post.tags?.map((tag) => (
                     <span
@@ -516,7 +503,9 @@ const PostsManager = () => {
           <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
             <div className="flex items-center space-x-2 overflow-hidden">
               <span className="font-medium truncate">{comment.user.username}:</span>
-              <span className="truncate">{highlightText(comment.body, searchQuery)}</span>
+              <span className="truncate">
+                <HightLightText text={comment.body} highlight={searchQuery} />
+              </span>
             </div>
             <div className="flex items-center space-x-1">
               <Button variant="ghost" size="sm" onClick={() => likeComment(comment.id, postId)}>
@@ -741,10 +730,14 @@ const PostsManager = () => {
         {selectedPost && (
           <DialogContent className="max-w-3xl">
             <DialogHeader>
-              <DialogTitle>{highlightText(selectedPost?.title, searchQuery)}</DialogTitle>
+              <DialogTitle>
+                <HightLightText text={selectedPost?.title} highlight={searchQuery} />
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <p>{highlightText(selectedPost?.body, searchQuery)}</p>
+              <p>
+                <HightLightText text={selectedPost?.body} highlight={searchQuery} />
+              </p>
               {renderComments(selectedPost?.id)}
             </div>
           </DialogContent>
