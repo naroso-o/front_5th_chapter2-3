@@ -1,0 +1,22 @@
+import { Edit2 } from "lucide-react"
+import { Button } from "../../../shared/ui"
+import useComments from "../model/useComments"
+import { Comment } from "../../../pages/PostsManagerPage"
+
+interface CommentEditButtonProps {
+  comment: Comment
+}
+export const CommentEditButton = ({ comment }: CommentEditButtonProps) => {
+  const { editComment } = useComments()
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => {
+        editComment(comment)
+      }}
+    >
+      <Edit2 className="w-3 h-3" />
+    </Button>
+  )
+}

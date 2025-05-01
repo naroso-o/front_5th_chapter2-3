@@ -32,6 +32,7 @@ import useUserStore from "../shared/model/useUserStore"
 import useTagStore from "../shared/model/useTagStore"
 import { useLocation } from "react-router-dom"
 import { HightLightText } from "../shared/ui/HighLightText"
+import { CommentSection } from "../features/post/ui/CommentSection"
 
 export type Tag = {
   url: string
@@ -99,18 +100,7 @@ const PostsManager = () => {
 
   const { tags } = useTagStore()
 
-  const {
-    comments,
-    setComments,
-    selectedComment,
-    setSelectedComment,
-    newComment,
-    setNewComment,
-    showAddCommentDialog,
-    setShowAddCommentDialog,
-    showEditCommentDialog,
-    setShowEditCommentDialog,
-  } = useCommentStore()
+  const { comments, setComments } = useCommentStore()
 
   const {
     posts,
@@ -278,97 +268,6 @@ const PostsManager = () => {
     }
   }
 
-  // 댓글 추가
-  const addComment = async () => {
-    try {
-      const response = await fetch("/api/comments/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(useCommentStore.getState().newComment),
-      })
-      const data = await response.json()
-
-      setComments({
-        ...useCommentStore.getState().comments,
-        [data.postId]: [...(useCommentStore.getState().comments[data.postId] || []), data],
-      })
-
-      setShowAddCommentDialog(false)
-      setNewComment({ body: "", postId: null, userId: 1 })
-    } catch (error) {
-      console.error("댓글 추가 오류:", error)
-    }
-  }
-
-  // 댓글 업데이트
-  const updateComment = async () => {
-    try {
-      const { selectedComment, comments } = useCommentStore.getState()
-
-      if (!selectedComment) {
-        throw new Error()
-      }
-
-      const response = await fetch(`/api/comments/${selectedComment.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body: selectedComment.body }),
-      })
-      const data = await response.json()
-
-      setComments({
-        ...comments,
-        [data.postId]: comments[data.postId].map((comment) => (comment.id === data.id ? data : comment)),
-      })
-
-      setShowEditCommentDialog(false)
-    } catch (error) {
-      console.error("댓글 업데이트 오류:", error)
-    }
-  }
-
-  // 댓글 삭제
-  const deleteComment = async (id: number, postId: number) => {
-    try {
-      const { comments } = useCommentStore.getState()
-
-      await fetch(`/api/comments/${id}`, {
-        method: "DELETE",
-      })
-
-      setComments({
-        ...comments,
-        [postId]: comments[postId].filter((comment) => comment.id !== id),
-      })
-    } catch (error) {
-      console.error("댓글 삭제 오류:", error)
-    }
-  }
-
-  // 댓글 좋아요
-  const likeComment = async (id: number, postId: number) => {
-    try {
-      const comment = comments[postId].find((c) => c.id === id)
-      if (!comment) {
-        throw new Error()
-      }
-      const response = await fetch(`/api/comments/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ likes: comment.likes + 1 }),
-      })
-      const data = await response.json()
-      setComments({
-        ...comments,
-        [postId]: comments[postId].map((comment) =>
-          comment.id === data.id ? { ...data, likes: comment.likes + 1 } : comment,
-        ),
-      })
-    } catch (error) {
-      console.error("댓글 좋아요 오류:", error)
-    }
-  }
-
   // 게시물 상세 보기
   const openPostDetail = (post: Post) => {
     setSelectedPost(post)
@@ -480,56 +379,6 @@ const PostsManager = () => {
         ))}
       </TableBody>
     </Table>
-  )
-
-  // 댓글 렌더링
-  const renderComments = (postId: number) => (
-    <div className="mt-2">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold">댓글</h3>
-        <Button
-          size="sm"
-          onClick={() => {
-            setNewComment({ ...newComment, postId })
-            setShowAddCommentDialog(true)
-          }}
-        >
-          <Plus className="w-3 h-3 mr-1" />
-          댓글 추가
-        </Button>
-      </div>
-      <div className="space-y-1">
-        {comments[postId]?.map((comment) => (
-          <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
-            <div className="flex items-center space-x-2 overflow-hidden">
-              <span className="font-medium truncate">{comment.user.username}:</span>
-              <span className="truncate">
-                <HightLightText text={comment.body} highlight={searchQuery} />
-              </span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="sm" onClick={() => likeComment(comment.id, postId)}>
-                <ThumbsUp className="w-3 h-3" />
-                <span className="ml-1 text-xs">{comment.likes}</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSelectedComment(comment)
-                  setShowEditCommentDialog(true)
-                }}
-              >
-                <Edit2 className="w-3 h-3" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => deleteComment(comment.id, postId)}>
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
   )
 
   return (
@@ -687,43 +536,6 @@ const PostsManager = () => {
         </DialogContent>
       </Dialog>
 
-      {/* 댓글 추가 대화상자 */}
-      <Dialog open={showAddCommentDialog} onOpenChange={setShowAddCommentDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>새 댓글 추가</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Textarea
-              placeholder="댓글 내용"
-              value={newComment.body}
-              onChange={(e) => setNewComment({ ...newComment, body: e.target.value })}
-            />
-            <Button onClick={addComment}>댓글 추가</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* 댓글 수정 대화상자 */}
-      <Dialog open={showEditCommentDialog} onOpenChange={setShowEditCommentDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>댓글 수정</DialogTitle>
-          </DialogHeader>
-          {/* TODO */}
-          {selectedComment && (
-            <div className="space-y-4">
-              <Textarea
-                placeholder="댓글 내용"
-                value={selectedComment?.body || ""}
-                onChange={(e) => setSelectedComment({ ...selectedComment, body: e.target.value })}
-              />
-              <Button onClick={updateComment}>댓글 업데이트</Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
       {/* 게시물 상세 보기 대화상자 */}
       <Dialog open={showPostDetailDialog} onOpenChange={setShowPostDetailDialog}>
         {/* TODO */}
@@ -738,7 +550,7 @@ const PostsManager = () => {
               <p>
                 <HightLightText text={selectedPost?.body} highlight={searchQuery} />
               </p>
-              {renderComments(selectedPost?.id)}
+              <CommentSection postId={selectedPost?.id} />
             </div>
           </DialogContent>
         )}
