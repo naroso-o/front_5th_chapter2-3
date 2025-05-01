@@ -36,16 +36,30 @@ const usePosts = () => {
   const selectedPostBody = selectedPost?.body || ""
   const selectedPostId = selectedPost?.id || 0 // TODO: null일 때 0?
 
-  const executeInitialFetch = () => {
-    fetchTags()
-    fetchPosts()
+  const executeInitialFetch = async () => {
+    const tags = await fetchTags()
+    setTags(tags)
+
+    const response = await fetchPosts()
+    if (response) {
+      setPosts(response.posts)
+      setTotal(response.total)
+    }
   }
 
-  const updatedURLFetch = () => {
+  const updatedURLFetch = async () => {
     if (selectedTag) {
-      fetchPostsByTag(selectedTag)
+      const response = await fetchPostsByTag(selectedTag)
+      if (response) {
+        setPosts(response.posts)
+        setTotal(response.total)
+      }
     } else {
-      fetchPosts()
+      const response = await fetchPosts()
+      if (response) {
+        setPosts(response.posts)
+        setTotal(response.total)
+      }
     }
   }
 
@@ -53,58 +67,48 @@ const usePosts = () => {
   const fetchTags = async () => {
     try {
       const response = await fetch("/api/posts/tags")
-      const data = await response.json()
-      setTags(data)
+      return await response.json()
     } catch (error) {
       console.error("태그 가져오기 오류:", error)
     }
   }
 
   /** 게시물 가져오기 */
-  const fetchPosts = () => {
+  const fetchPosts = async () => {
     setLoading(true)
-    let postsData: Posts
-    let usersData: User[]
+    try {
+      const postsResponse = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
+      const postsData: Posts = await postsResponse.json()
 
-    fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-      .then((response) => response.json())
-      .then((data) => {
-        postsData = data
-        return fetch("/api/users?limit=0&select=username,image")
-      })
-      .then((response) => response.json())
-      .then((users) => {
-        usersData = users.users
-        const postsWithUsers = postsData.posts.map((post) => {
-          const author = usersData.find((user) => user.id === post.userId)
+      const usersResponse = await fetch("/api/users?limit=0&select=username,image")
+      const usersData: { users: User[] } = await usersResponse.json()
 
-          // 에러 핸들링
-          if (!author) {
-            throw new Error()
-          }
+      const postsWithUsers = postsData.posts.map((post) => {
+        const author = usersData.users.find((user) => user.id === post.userId)
+        if (!author) {
+          throw new Error(`작성자 가져오기 오류: ${post.id}`)
+        }
+        return {
+          ...post,
+          author,
+        }
+      })
 
-          return {
-            ...post,
-            author,
-          }
-        })
-        setPosts(postsWithUsers)
-        setTotal(postsData.total)
-      })
-      .catch((error) => {
-        console.error("게시물 가져오기 오류:", error)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+      return { posts: postsWithUsers, total: postsData.total }
+    } catch (error) {
+      console.error("게시물 가져오기 오류:", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   /** 태그별 게시물 가져오기 */
-  const fetchPostsByTag = async (tag: string) => {
+  const fetchPostsByTag = async (tag: string): Promise<{ posts: Post[]; total: number } | null> => {
     if (!tag || tag === "all") {
-      fetchPosts()
-      return
+      const response = await fetchPosts()
+      return response ?? null
     }
+
     setLoading(true)
     try {
       const [postsResponse, usersResponse] = await Promise.all([
@@ -112,25 +116,36 @@ const usePosts = () => {
         fetch("/api/users?limit=0&select=username,image"),
       ])
       const postsData = await postsResponse.json()
-      const usersData = await usersResponse.json()
+      const usersData: { users: User[] } = await usersResponse.json()
 
-      const postsWithUsers = postsData.posts.map((post: Post) => ({
-        ...post,
-        author: usersData.users.find((user: User) => user.id === post.userId),
-      }))
+      const postsWithUsers = postsData.posts.map((post: Post) => {
+        const author = usersData.users.find((user) => user.id === post.userId)
+        if (!author) {
+          throw new Error(`작성자 가져오기 오류: ${post.id}`)
+        }
+        return {
+          ...post,
+          author,
+        }
+      })
 
-      setPosts(postsWithUsers)
-      setTotal(postsData.total)
+      return { posts: postsWithUsers, total: postsData.total }
     } catch (error) {
       console.error("태그별 게시물 가져오기 오류:", error)
+      return null
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   /** 게시물 검색 */
   const searchPostsFetch = async () => {
     if (!searchQuery) {
-      fetchPosts()
+      const response = await fetchPosts()
+      if (response) {
+        setPosts(response.posts)
+        setTotal(response.total)
+      }
       return
     }
     setLoading(true)
