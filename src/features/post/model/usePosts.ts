@@ -3,16 +3,15 @@ import useParam from "@/shared/model/useParam"
 import usePostStore from "@/shared/model/usePostStore"
 import useTagStore from "@/shared/model/useTagStore"
 import useUserStore from "@/shared/model/useUserStore"
-import { Post, Posts, User } from "@/shared/types"
+import { Post, Tag, User } from "@/shared/types"
 
 export type EditType = "title" | "body"
 export type AddType = "title" | "body" | "userId"
 
 const usePosts = () => {
-  const { selectedTag, limit, skip, searchQuery, updateParam } = useParam()
+  const {  searchQuery, updateParam } = useParam()
   const {
     loading,
-    setLoading,
     posts,
     setPosts,
     newPost,
@@ -36,119 +35,14 @@ const usePosts = () => {
   const selectedPostBody = selectedPost?.body || ""
   const selectedPostId = selectedPost?.id || 0 // TODO: null일 때 0?
 
-  const executeInitialFetch = async () => {
-    const tags = await fetchTags()
+  const initialize = (tags: Tag[] = [], posts: Post[] = [], total: number = 0) => {
     setTags(tags)
-
-    const response = await fetchPosts()
-    if (response) {
-      setPosts(response.posts)
-      setTotal(response.total)
-    }
-  }
-
-  const updatedURLFetch = async () => {
-    if (selectedTag) {
-      const response = await fetchPostsByTag(selectedTag)
-      if (response) {
-        setPosts(response.posts)
-        setTotal(response.total)
-      }
-    } else {
-      const response = await fetchPosts()
-      if (response) {
-        setPosts(response.posts)
-        setTotal(response.total)
-      }
-    }
-  }
-
-  /** 태그 가져오기 */
-  const fetchTags = async () => {
-    try {
-      const response = await fetch("/api/posts/tags")
-      return await response.json()
-    } catch (error) {
-      console.error("태그 가져오기 오류:", error)
-    }
-  }
-
-  /** 게시물 가져오기 */
-  const fetchPosts = async () => {
-    setLoading(true)
-    try {
-      const postsResponse = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-      const postsData: Posts = await postsResponse.json()
-
-      const usersResponse = await fetch("/api/users?limit=0&select=username,image")
-      const usersData: { users: User[] } = await usersResponse.json()
-
-      const postsWithUsers = postsData.posts.map((post) => {
-        const author = usersData.users.find((user) => user.id === post.userId)
-        if (!author) {
-          throw new Error(`작성자 가져오기 오류: ${post.id}`)
-        }
-        return {
-          ...post,
-          author,
-        }
-      })
-
-      return { posts: postsWithUsers, total: postsData.total }
-    } catch (error) {
-      console.error("게시물 가져오기 오류:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /** 태그별 게시물 가져오기 */
-  const fetchPostsByTag = async (tag: string): Promise<{ posts: Post[]; total: number } | null> => {
-    if (!tag || tag === "all") {
-      const response = await fetchPosts()
-      return response ?? null
-    }
-
-    setLoading(true)
-    try {
-      const [postsResponse, usersResponse] = await Promise.all([
-        fetch(`/api/posts/tag/${tag}`),
-        fetch("/api/users?limit=0&select=username,image"),
-      ])
-      const postsData = await postsResponse.json()
-      const usersData: { users: User[] } = await usersResponse.json()
-
-      const postsWithUsers = postsData.posts.map((post: Post) => {
-        const author = usersData.users.find((user) => user.id === post.userId)
-        if (!author) {
-          throw new Error(`작성자 가져오기 오류: ${post.id}`)
-        }
-        return {
-          ...post,
-          author,
-        }
-      })
-
-      return { posts: postsWithUsers, total: postsData.total }
-    } catch (error) {
-      console.error("태그별 게시물 가져오기 오류:", error)
-      return null
-    } finally {
-      setLoading(false)
-    }
+    setPosts(posts)
+    setTotal(total)
   }
 
   /** 게시물 검색 */
   const searchPostsFetch = async () => {
-    if (!searchQuery) {
-      const response = await fetchPosts()
-      if (response) {
-        setPosts(response.posts)
-        setTotal(response.total)
-      }
-      return
-    }
-    setLoading(true)
     try {
       const response = await fetch(`/api/posts/search?q=${searchQuery}`)
       const data = await response.json()
@@ -157,7 +51,6 @@ const usePosts = () => {
     } catch (error) {
       console.error("게시물 검색 오류:", error)
     }
-    setLoading(false)
   }
 
   /** 게시물 추가 */
@@ -292,9 +185,7 @@ const usePosts = () => {
     setShowEditDialog,
     showPostDetailDialog,
     setShowPostDetailDialog,
-    fetchPostsByTag,
-    executeInitialFetch,
-    updatedURLFetch,
+    initialize,
   }
 }
 
